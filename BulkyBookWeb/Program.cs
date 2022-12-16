@@ -1,5 +1,7 @@
 using BulkyBookWeb.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     options=>options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
         ));
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
 
 var app = builder.Build();
 

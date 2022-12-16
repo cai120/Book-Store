@@ -1,5 +1,7 @@
 ﻿using BulkyBookWeb.Data;
+using BulkyBookWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 
 namespace BulkyBookWeb.Controllers
 {
@@ -15,7 +17,56 @@ namespace BulkyBookWeb.Controllers
         public IActionResult Index()
         {
             var categoryList = _db.Categories.ToList();
+            return View(categoryList);
+        }
+
+        public async Task<IActionResult> Create()
+        {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Category category)
+        {
+            if (category.Name == category.DisplayOrder.ToString())
+                ModelState.AddModelError("CustomError", "The Name cannot match the Display Order");
+
+            if(ModelState.IsValid)
+            {
+                await _db.Categories.AddAsync(category);
+                await _db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(category);
+        }
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if(id == null || id == 0)
+                return NotFound();
+
+            var categoryFromDb = _db.Categories.Find(id);
+
+            if(categoryFromDb == null)
+                return NotFound();
+
+            return View(categoryFromDb);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Category category)
+        {
+            if (category.Name == category.DisplayOrder.ToString())
+                ModelState.AddModelError("CustomError", "The Name cannot match the Display Order");
+
+            if(ModelState.IsValid)
+            {
+                _db.Categories.Update(category);
+                await _db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            return View(category);
         }
     }
 }
