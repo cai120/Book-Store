@@ -36,6 +36,8 @@ namespace BulkyBookWeb.Controllers
             {
                 await _db.Categories.AddAsync(category);
                 await _db.SaveChangesAsync();
+
+                TempData["Success"] = "Category Has Been Created Successfully";
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -64,6 +66,9 @@ namespace BulkyBookWeb.Controllers
             {
                 _db.Categories.Update(category);
                 await _db.SaveChangesAsync();
+
+                TempData["Success"] = "Category Has Been Modified Successfully";
+
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -83,6 +88,8 @@ namespace BulkyBookWeb.Controllers
             _db.Remove(categoryFromDb);
 
             await _db.SaveChangesAsync();
+
+            TempData["Success"] = "Category Has Been Deleted Successfully";
 
             return RedirectToAction("Index");
         }
