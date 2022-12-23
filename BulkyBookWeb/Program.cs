@@ -1,6 +1,5 @@
-using BulkyBookWeb.Data;
+using BulkyBook.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 
 
 var builder = WebApplication.CreateBuilder(args);
