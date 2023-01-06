@@ -1,0 +1,26 @@
+﻿@model Cover
+
+<form method="post">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary text-white">
+                Create Cover
+            </h2>
+            <hr />
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control col-6"/>
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <a asp-controller="Covers" asp-action="Index" class="btn btn-secondary">Back to index</a>
+
+        <button type="submit" class="btn btn-primary float-end"><i class="bi bi-plus"></i>Edit</button>
+    </div>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
+

@@ -3,9 +3,10 @@ using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BulkyBookWeb.Controllers
+namespace BulkyBookWeb.Areas.Admin.Controllers
 {
-    public class CategoryController  : Controller
+    [Area("Admin")]
+    public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -32,7 +33,7 @@ namespace BulkyBookWeb.Controllers
             if (category.Name == category.DisplayOrder.ToString())
                 ModelState.AddModelError("CustomError", "The Name cannot match the Display Order");
 
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 _unitOfWork.Category.Add(category);
 
@@ -43,12 +44,12 @@ namespace BulkyBookWeb.Controllers
         }
         public async Task<IActionResult> Edit(int? id)
         {
-            if(id == null || id == 0)
+            if (id == null || id == 0)
                 return NotFound();
 
-            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(a=>a.Id == id);
+            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(a => a.Id == id);
 
-            if(categoryFromDb == null)
+            if (categoryFromDb == null)
                 return NotFound();
 
             return View(categoryFromDb);
@@ -61,7 +62,7 @@ namespace BulkyBookWeb.Controllers
             if (category.Name == category.DisplayOrder.ToString())
                 ModelState.AddModelError("CustomError", "The Name cannot match the Display Order");
 
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 _unitOfWork.Category.Modify(category);
 
@@ -78,7 +79,7 @@ namespace BulkyBookWeb.Controllers
             if (id == null || id == 0)
                 return NotFound();
 
-            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(a=>a.Id == id);
+            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(a => a.Id == id);
 
             if (categoryFromDb == null)
                 return NotFound();

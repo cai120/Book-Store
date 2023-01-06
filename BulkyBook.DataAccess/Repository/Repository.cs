@@ -21,24 +21,24 @@ namespace BulkyBook.DataAccess.Repository
             this.dbSet = _db.Set<T>();
         }
 
-        public void Add(T entity)
+        public virtual void Add(T entity)
         {
             dbSet.Add(entity);
             Save();
         }
 
-        public T FindById(int id)
+        public virtual T FindById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> GetAll()
+        public virtual IEnumerable<T> GetAll()
         {
             IQueryable<T> query = dbSet;
             return query.ToList();
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>> filter)
+        public virtual T GetFirstOrDefault(Expression<Func<T, bool>> filter)
         {
             IQueryable<T> query = dbSet;
 
@@ -47,19 +47,19 @@ namespace BulkyBook.DataAccess.Repository
             return query.FirstOrDefault();
         }
 
-        public void Modify(T entity)
+        public virtual void Modify(T entity)
         {
             dbSet.Update(entity);
             Save();
         }
 
-        public void Remove(T entity)
+        public virtual void Remove(T entity)
         {
             dbSet.Remove(entity);
             Save();
         }
 
-        public void RemoveRange(IEnumerable<T> entities)
+        public virtual void RemoveRange(IEnumerable<T> entities)
         {
             dbSet.RemoveRange(entities);
             Save();
