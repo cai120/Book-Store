@@ -1,4 +1,5 @@
 ﻿using BulkyBook.DataAccess;
+using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,16 +7,16 @@ namespace BulkyBookWeb.Controllers
 {
     public class CategoryController  : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryController(ApplicationDbContext db)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            var categoryList = _db.Categories.ToList();
+            var categoryList = _unitOfWork.Category.GetAll();
             return View(categoryList);
         }
 
@@ -33,8 +34,7 @@ namespace BulkyBookWeb.Controllers
 
             if(ModelState.IsValid)
             {
-                await _db.Categories.AddAsync(category);
-                await _db.SaveChangesAsync();
+                _unitOfWork.Category.Add(category);
 
                 TempData["Success"] = "Category Has Been Created Successfully";
                 return RedirectToAction("Index");
@@ -46,7 +46,7 @@ namespace BulkyBookWeb.Controllers
             if(id == null || id == 0)
                 return NotFound();
 
-            var categoryFromDb = _db.Categories.Find(id);
+            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(a=>a.Id == id);
 
             if(categoryFromDb == null)
                 return NotFound();
@@ -63,8 +63,7 @@ namespace BulkyBookWeb.Controllers
 
             if(ModelState.IsValid)
             {
-                _db.Categories.Update(category);
-                await _db.SaveChangesAsync();
+                _unitOfWork.Category.Modify(category);
 
                 TempData["Success"] = "Category Has Been Modified Successfully";
 
@@ -79,14 +78,12 @@ namespace BulkyBookWeb.Controllers
             if (id == null || id == 0)
                 return NotFound();
 
-            var categoryFromDb = _db.Categories.Find(id);
+            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(a=>a.Id == id);
 
             if (categoryFromDb == null)
                 return NotFound();
 
-            _db.Remove(categoryFromDb);
-
-            await _db.SaveChangesAsync();
+            _unitOfWork.Category.Remove(categoryFromDb);
 
             TempData["Success"] = "Category Has Been Deleted Successfully";
 
