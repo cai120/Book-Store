@@ -16,3 +16,17 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.product-image{
+    border-radius:5px;
+    border: 1px solid #bbb9b9;
+}
+
+.product-card{
+    border-radius:5px;
+    border:1px solid #008cba;
+}
+
+.product-card:hover{
+     cursor: pointer;
+ }

@@ -16,14 +16,13 @@ namespace BulkyBook.DataAccess.Repository
             _db = db;
         }
 
-        public override void Modify(Product product)
-        {
-            
-            _db.Update(product);
-        }
-        public override Product FindById(int id)
-        {
-            return 
-        }
+        //public override void Modify(Product product)
+        //{
+        //    _db.Update(product);
+        //}
+        //public override Product FindById(int id)
+        //{
+        //    //return _db.Fi
+        //}
     }
 }

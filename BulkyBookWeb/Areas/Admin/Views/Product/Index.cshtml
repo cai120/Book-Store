@@ -5,13 +5,13 @@
         </div>
         <div class="col-6 text-end">
             <a asp-controller="Product" asp-action="Upsert" class="btn btn-primary">
-                <i class="bi bi-plus"></i> &nbsp; Create New Category
+                <i class="bi bi-plus"></i> &nbsp; Create New Product
             </a>
         </div>
     </div>
     <br>
 
-    <table class="table table-bordered table-striped">
+    <table id="productIndex" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>
@@ -38,3 +38,8 @@
         </tbody>
     </table>
 </div>
+@section Scripts{
+<script>
+        initProductIndex('@Url.Action("GetAll", "Product")', '@Url.Action("Delete", "Product")');
+</script>
+}

@@ -1,83 +1,93 @@
 ﻿@model Product
 
 <form method="post" enctype="multipart/form-data">
-    <div class="border p-3 mt-4 row">
-        <div class="row pb-2">
-            <h2 class="text-primary">
-                @(Model.Id != 0? "Update":"Create")Product
-            </h2>
-            <hr />
+
+    <div class="row">
+        <div class="col-10">
+            <div class="border p-3 mt-4 row">
+                <div class="col-12 pb-2">
+                    <h2 class="text-primary">
+                        @(Model.Id != 0 ? "Update" : "Create")Product
+                    </h2>
+                    <hr />
+                </div>
+                <input type="hidden" asp-for="ImageUrl"/>
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="mb-3">
+                    <label asp-for="Name"></label>
+                    <input asp-for="Name" class="form-control col-6" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Description"></label>
+                    <textarea asp-for="Description" rows="3" class="form-control col-6"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="ISBN"></label>
+                    <input asp-for="ISBN" class="form-control col-6" />
+                    <span asp-validation-for="ISBN" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="Author"></label>
+                    <input asp-for="Author" class="form-control col-6" />
+                    <span asp-validation-for="Author" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="ListPrice"></label>
+                    <input asp-for="ListPrice" class="form-control col-6" />
+                    <span asp-validation-for="ListPrice" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="Price"></label>
+                    <input asp-for="Price" class="form-control col-6" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="Price50"></label>
+                    <input asp-for="Price50" class="form-control col-6" />
+                    <span asp-validation-for="Price50" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="Price100"></label>
+                    <input asp-for="Price100" class="form-control col-6" />
+                    <span asp-validation-for="Price100" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ImageUrl"></label>
+                    <input type="file" id="uploadImage" name="file" class="form-control col-6" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="CategoryId"></label>
+                    <select asp-for="CategoryId" asp-items="Model.CategorySelectList" class="form-select col-6">
+                        <option disabled selected>Please Select a Category</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+                <div class="mb-3 col-6">
+                    <label asp-for="CoverId"></label>
+                    <select asp-for="CoverId" asp-items="Model.CoverSelectList" class="form-select col-6">
+                        <option disabled selected>Please Select a Cover</option>
+                    </select>
+                    <span asp-validation-for="CoverId" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">Back to index</a>
+                    @if (Model.Id != 0)
+                    {
+                        <button type="submit" class="btn btn-primary float-end"><i class="bi bi-plus"></i>Edit</button>
+                    }
+                    else
+                    {
+                        <button type="submit" id="create" class="btn btn-primary float-end"><i class="bi bi-plus"></i>Create</button>
+                    }
+                </div>
+            </div>
+
         </div>
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <div class="mb-3">
-            <label asp-for="Name"></label>
-            <input asp-for="Name" class="form-control col-6" />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Description"></label>
-            <textarea asp-for="Description" rows="3" class="form-control col-6"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="ISBN"></label>
-            <input asp-for="ISBN" class="form-control col-6" />
-            <span asp-validation-for="ISBN" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="Author"></label>
-            <input asp-for="Author" class="form-control col-6" />
-            <span asp-validation-for="Author" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="ListPrice"></label>
-            <input asp-for="ListPrice" class="form-control col-6" />
-            <span asp-validation-for="ListPrice" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="Price"></label>
-            <input asp-for="Price" class="form-control col-6" />
-            <span asp-validation-for="Price" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="Price50"></label>
-            <input asp-for="Price50" class="form-control col-6" />
-            <span asp-validation-for="Price50" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="Price100"></label>
-            <input asp-for="Price100" class="form-control col-6" />
-            <span asp-validation-for="Price100" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="ImageUrl"></label>
-            <input type="file" id="uploadImage" name="file" class="form-control col-6" />
-            <span asp-validation-for="ImageUrl" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="CategoryId"></label>
-            <select asp-for="CategoryId" asp-items="Model.CategorySelectList" class="form-select col-6">
-                <option disabled selected>Please Select a Category</option>
-            </select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
-        <div class="mb-3 col-6">
-            <label asp-for="CoverId"></label>
-            <select asp-for="CoverId" asp-items="Model.CoverSelectList" class="form-select col-6">
-                <option disabled selected>Please Select a Cover</option>
-            </select>
-            <span asp-validation-for="CoverId" class="text-danger"></span>
-        </div>
-        <div class="col-12">
-            <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">Back to index</a>
-            @if (Model.Id != 0)
-            {
-                <button type="submit" class="btn btn-primary float-end"><i class="bi bi-plus"></i>Edit</button>
-            }
-            else
-            {
-                <button type="submit" id="create" class="btn btn-primary float-end"><i class="bi bi-plus"></i>Create</button>
-            }
+        <div class="col-2">
+            <img src="@Model.ImageUrl" name="ImageUrl" width="100%" class="product-image"/>
         </div>
     </div>
 </form>
@@ -85,6 +95,17 @@
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <script>
+            tinymce.init({
+                selector: 'textarea',
+                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                tinycomments_mode: 'embedded',
+                tinycomments_author: 'Author name',
+                mergetags_list: [
+                    { value: 'First.Name', title: 'First Name' },
+                    { value: 'Email', title: 'Email' },
+                ]
+            });
         ValidateInput();
     </script>
 }

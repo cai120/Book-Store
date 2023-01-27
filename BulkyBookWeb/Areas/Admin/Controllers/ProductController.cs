@@ -68,6 +68,15 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
                     string fileName = Guid.NewGuid().ToString();
                     var uploads = Path.Combine(wwwRootPath, @"Images\Products");
                     var extention = Path.GetExtension(file.FileName);
+
+                    if(!string.IsNullOrWhiteSpace(product.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(wwwRootPath, product.ImageUrl.TrimStart('\\'));
+                        if(System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
                     using (var fileStreams = new FileStream(Path.Combine(uploads, fileName+extention), FileMode.Create))
                     {
                         file.CopyTo(fileStreams);
@@ -95,22 +104,32 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             return View(product);
         }
 
-        [HttpPost]
+        #region API Calls
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var productList = _unitOfWork.Product.GetAll(includeProperties:"Category,Cover");
+            return Json(new { data = productList });
+        }
+        [HttpDelete]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || id == 0)
-                return NotFound();
+                return Json(new {success= false, message="Id not available."});
 
             var productFromDb = _unitOfWork.Product.GetFirstOrDefault(a => a.Id == id);
 
             if (productFromDb == null)
-                return NotFound();
+                return Json(new {success= false, message="Entity not found."});
 
             _unitOfWork.Product.Remove(productFromDb);
 
             TempData["Success"] = "Product Has Been Deleted Successfully";
 
-            return RedirectToAction("Index");
+            return Json(new { success = true, message = "Product has been deleted." });
         }
+
+        #endregion
     }
 }
