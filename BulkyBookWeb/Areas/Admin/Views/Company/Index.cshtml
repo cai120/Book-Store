@@ -1,0 +1,45 @@
+﻿<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Company List</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="Company" asp-action="Upsert" class="btn btn-primary">
+                <i class="bi bi-plus"></i> &nbsp; Add New Company
+            </a>
+        </div>
+    </div>
+    <br>
+
+    <table id="companyIndex" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Company Name
+                </th>
+                <th>
+                    Road Name
+                </th>
+                <th>
+                    City
+                </th>
+                <th>
+                    Post Code
+                </th>
+                <th>
+                    Phone Number
+                </th>
+                <th>
+                    Delete?
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+@section Scripts{
+    <script>
+        initCompanyIndex('@Url.Action("GetAll", "Company")', '@Url.Action("Delete", "Company")');
+    </script>
+}

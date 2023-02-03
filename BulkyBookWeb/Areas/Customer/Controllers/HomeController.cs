@@ -1,8 +1,10 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BulkyBookWeb.Areas.Customer.Controllers
 {
@@ -25,14 +27,40 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             return View(products);
         }
 
-        public IActionResult Details(int id)
+        public IActionResult Details(int productId)
         {
             Trolley trolley = new Trolley
             {
-                Product = _unitOfWork.Product.GetFirstOrDefault(a => a.Id == id, includeProperties: "Category,Cover"),
+                Product = _unitOfWork.Product.GetFirstOrDefault(a => a.Id == productId, includeProperties: "Category,Cover"),
+                ProductId = productId,
                 Count = 1
             };
             return View(trolley);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Details(Trolley trolley)
+        {
+            var claims = (ClaimsIdentity)User.Identity;
+            var claim = claims.FindFirst(ClaimTypes.NameIdentifier);
+
+            var existingTrolleyItems = _unitOfWork.Trolley.GetFirstOrDefault(a => a.ApplicationUserId == claim.Value && a.ProductId == trolley.ProductId);
+
+            if (existingTrolleyItems != null)
+            {
+                existingTrolleyItems.Count = (existingTrolleyItems.Count + trolley.Count);
+
+                _unitOfWork.Trolley.Modify(existingTrolleyItems);
+            }
+            else
+            {
+                trolley.ApplicationUserId = claim.Value;
+
+                _unitOfWork.Trolley.Add(trolley);
+            }
+            return RedirectToAction("Index");
         }
 
         public IActionResult Privacy()

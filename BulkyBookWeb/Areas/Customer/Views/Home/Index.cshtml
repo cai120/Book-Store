@@ -7,7 +7,7 @@
             <div class="col-lg-3 col-sm-3 col-md-3">
                 <div class="row p-2">
                     <div class="col-12 p-1 product-card">
-                    <a href="@Url.Action("Details", "Home", new {id = product.Id})">
+                        <a href="@Url.Action("Details", "Home", new {productId = product.Id})">
                         <div class="card" id="productCard">
                             <img src="@product.ImageUrl" class="card-img-top" />
                             <div class="pl-1">

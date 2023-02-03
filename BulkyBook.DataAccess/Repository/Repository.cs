@@ -45,6 +45,22 @@ namespace BulkyBook.DataAccess.Repository
             return query.ToList();
         }
 
+
+        public virtual IEnumerable<T> GetAll(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+            query = query.Where(filter);
+
+            if (!string.IsNullOrWhiteSpace(includeProperties))
+            {
+                foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(property);
+                }
+            }
+            return query.ToList();
+        }
+
         public virtual T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;

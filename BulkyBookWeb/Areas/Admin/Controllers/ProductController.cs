@@ -112,6 +112,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
             var productList = _unitOfWork.Product.GetAll(includeProperties:"Category,Cover");
             return Json(new { data = productList });
         }
+
         [HttpDelete]
         public async Task<IActionResult> Delete(int? id)
         {
