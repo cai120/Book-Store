@@ -14,5 +14,7 @@ namespace BulkyBook.DataAccess.Repository.IRepository
         ICompanyRepository Company { get; }
         IApplicationUserRepository User { get; }
         ITrolleyRepository Trolley { get; }
+        IOrderHeaderRepository OrderHeader { get; }
+        IOrderDetailRepository OrderDetail { get; }
     }
 }

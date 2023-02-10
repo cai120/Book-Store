@@ -96,7 +96,7 @@ namespace BulkyBook.DataAccess.Repository
             Save();
         }
 
-        private void Save()
+        public void Save()
         {
             _db.SaveChanges();
         }

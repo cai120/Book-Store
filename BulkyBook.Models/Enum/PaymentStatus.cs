@@ -10,6 +10,8 @@ namespace BulkyBook.Models.Enum
 	{
 		AwaitingPayment,
 		PaymentProcessing,
-		Paid
+		Paid,
+		Rejected,
+		ApprovedForDelayedPayment
 	}
 }

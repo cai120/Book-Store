@@ -12,6 +12,8 @@ namespace BulkyBook.Models.Enum
 		AwaitingPayment,
 		Paid,
 		Shipped,
-		Delivered
+		Delivered,
+		Cancelled,
+		Refunded
 	}
 }
