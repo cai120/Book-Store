@@ -1,6 +1,7 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace BulkyBookWeb.Areas.Admin.Controllers
 {
@@ -20,10 +21,28 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 
 		#region API Calls
 		[HttpGet]
-		public IActionResult GetAll()
+		public IActionResult GetAll(string status)
 		{
 			var orderHeaders = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
-			return Json(new {data = orderHeaders});
+
+            switch (status)
+            {
+                case "pending":
+                    orderHeaders = orderHeaders.Where(a=>a.OrderStatus == )
+                    break;
+				case "inprocess":
+                    inprocess = "active text-white";
+                    break;
+                case "completed":
+                    completed = "active text-white";
+                    break;
+                default:
+                    all = "active text-white";
+                    break;
+
+            }
+
+            return Json(new {data = orderHeaders});
 		}
 		#endregion
 	}
