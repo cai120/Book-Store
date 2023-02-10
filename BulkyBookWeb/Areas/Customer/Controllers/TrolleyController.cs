@@ -84,8 +84,6 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
 			TrolleyVM.ListItems = _unitOfWork.Trolley.GetAll(a => a.ApplicationUserId == claim.Value, includeProperties: "Product");
 
-			TrolleyVM.OrderHeader.PaymentStatus = BulkyBook.Models.Enum.PaymentStatus.AwaitingPayment;
-			TrolleyVM.OrderHeader.OrderStatus = BulkyBook.Models.Enum.OrderStatus.AwaitingPayment;
 			TrolleyVM.OrderHeader.OrderDate = DateTime.Now;
 			TrolleyVM.OrderHeader.ApplicationUserId = claim.Value;
 
@@ -94,6 +92,19 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 				item.Price = GetPriceBasedOnQuantity(item.Count, item.Product.Price, item.Product.Price50, item.Product.Price100);
 
 				TrolleyVM.OrderHeader.OrderTotal += (item.Price * item.Count);
+			}
+
+			var user = _unitOfWork.User.GetFirstOrDefault(a => a.Id == claim.Value);
+
+			if (!user.CompanyId.HasValue)
+			{
+				TrolleyVM.OrderHeader.PaymentStatus = PaymentStatus.AwaitingPayment;
+				TrolleyVM.OrderHeader.OrderStatus = OrderStatus.AwaitingPayment;
+			}
+			else
+			{
+				TrolleyVM.OrderHeader.PaymentStatus = PaymentStatus.ApprovedForDelayedPayment;
+				TrolleyVM.OrderHeader.OrderStatus = OrderStatus.OrderPlaced;
 			}
 
 			_unitOfWork.OrderHeader.Add(TrolleyVM.OrderHeader);
@@ -110,63 +121,70 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 				_unitOfWork.OrderDetail.Add(detail);
 			}
 
-			var domain = "https://localhost:44304/";
-			var options = new SessionCreateOptions
+			if (!user.CompanyId.HasValue)
 			{
-				PaymentMethodTypes = new()
+				var domain = "https://localhost:44304/";
+				var options = new SessionCreateOptions
+				{
+					PaymentMethodTypes = new()
 				{
 					"card"
 				},
-				LineItems = new(),
+					LineItems = new(),
 
 
-				Mode = "payment",
-				SuccessUrl = domain+$"customer/trolley/OrderConfirmed?id={TrolleyVM.OrderHeader.Id}",
-				CancelUrl = domain + $"customer/trolley/index",
-			};
+					Mode = "payment",
+					SuccessUrl = domain + $"customer/trolley/OrderConfirmed?id={TrolleyVM.OrderHeader.Id}",
+					CancelUrl = domain + $"customer/trolley/index",
+				};
 
-			foreach (var item in TrolleyVM.ListItems)
-			{
-				options.LineItems.Add(
-				  new SessionLineItemOptions
-				  {
-					  PriceData = new SessionLineItemPriceDataOptions
+				foreach (var item in TrolleyVM.ListItems)
+				{
+					options.LineItems.Add(
+					  new SessionLineItemOptions
 					  {
-						  UnitAmount = (long)(item.Price*100),
-						  Currency = "gbp",
-						  ProductData = new SessionLineItemPriceDataProductDataOptions
+						  PriceData = new SessionLineItemPriceDataOptions
 						  {
-							  Name = item.Product.Name,
+							  UnitAmount = (long)(item.Price * 100),
+							  Currency = "gbp",
+							  ProductData = new SessionLineItemPriceDataProductDataOptions
+							  {
+								  Name = item.Product.Name,
+							  },
 						  },
-					  },
-					  Quantity = item.Count,
-				  });
+						  Quantity = item.Count,
+					  });
+				}
+
+				var service = new SessionService();
+				Session session = service.Create(options);
+				_unitOfWork.OrderHeader.UpdateStripe(TrolleyVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+				Response.Headers.Add("Location", session.Url);
+				return new StatusCodeResult(303);
+			}
+			else
+			{
+				return RedirectToAction("OrderConfirmed", "Trolley", new {id=TrolleyVM.OrderHeader.Id});
 			}
 
-			var service = new SessionService();
-			Session session = service.Create(options);
-			_unitOfWork.OrderHeader.UpdateStripe(TrolleyVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
-			Response.Headers.Add("Location", session.Url);
-			return new StatusCodeResult(303);
-
-
-			_unitOfWork.Trolley.RemoveRange(TrolleyVM.ListItems);
-
-			return RedirectToAction("Index", "Home");
 		}
 
 		public IActionResult OrderConfirmed(int id)
 		{
 			var orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(x => x.Id == id);
-			var service = new SessionService();
-			Session session = service.Get(orderHeader.SessionId);
-
-			if(session.PaymentStatus.ToLower() == "paid")
+			if (orderHeader.PaymentStatus != PaymentStatus.ApprovedForDelayedPayment)
 			{
-				_unitOfWork.OrderHeader.UpdateStatus(id, OrderStatus.Paid, PaymentStatus.Paid);
-			}
+				var service = new SessionService();
+				Session session = service.Get(orderHeader.SessionId);
 
-			return View();
+				if (session.PaymentStatus.ToLower() == "paid")
+					_unitOfWork.OrderHeader.UpdateStatus(id, OrderStatus.Paid, PaymentStatus.Paid);
+			}
+			var items = _unitOfWork.Trolley.GetAll(a=>a.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
+
+			_unitOfWork.Trolley.RemoveRange(items);
+
+			return View(id);
 		}
 
 		public IActionResult Plus(int id)

@@ -93,6 +93,63 @@ initProductIndex = function (dataUrl, deleteUrl) {
     }
 };
 
+initOrderIndex = function (dataUrl) {
+
+    var url = window.location.search;
+    if (url.includes("inprocess")) {
+        loadDataTable("inprocess");
+    }
+    else if (url.includes("completed")) {
+        loadDataTable("completed");
+    }
+    else if (url.includes("pending")) {
+        loadDataTable("pending");
+    }
+    else {
+        loadDataTable("all");
+    }
+
+    var dataTable;
+
+    var dataColumns = [
+        {
+            data: "id",
+        },
+        {
+            data: "name",
+            render: function (data, display, full) {
+                return `
+                    <a href="Order/Details?id=${full.id}">${data}</a>`
+            }
+        },
+        {
+            data: "phoneNumber",
+        },
+        {
+            data: "applicationUser.email",
+        },
+        {
+            data: "orderStatus",
+        },
+        {
+            data: "orderTotal",
+        }
+    ]
+
+    $(document).ready(function () {
+        loadDataTable();
+    });
+
+    function loadDataTable(status) {
+        dataTable = $('#orderIndex').DataTable({
+            ajax: {
+                url: dataUrl + "?status=" + status
+            },
+            columns: dataColumns
+        });
+    }
+};
+
 initCompanyIndex = function (dataUrl, deleteUrl) {
     var dataTable;
 
