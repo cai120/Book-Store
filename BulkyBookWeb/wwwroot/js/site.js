@@ -95,20 +95,6 @@ initProductIndex = function (dataUrl, deleteUrl) {
 
 initOrderIndex = function (dataUrl) {
 
-    var url = window.location.search;
-    if (url.includes("inprocess")) {
-        loadDataTable("inprocess");
-    }
-    else if (url.includes("completed")) {
-        loadDataTable("completed");
-    }
-    else if (url.includes("pending")) {
-        loadDataTable("pending");
-    }
-    else {
-        loadDataTable("all");
-    }
-
     var dataTable;
 
     var dataColumns = [
@@ -136,11 +122,22 @@ initOrderIndex = function (dataUrl) {
         }
     ]
 
-    $(document).ready(function () {
-        loadDataTable();
-    });
+    var url = window.location.search;
+    if (url.includes("inprocess")) {
+        loadDataTable("inprocess", dataColumns);
+    }
+    else if (url.includes("completed")) {
+        loadDataTable("completed", dataColumns);
+    }
+    else if (url.includes("pending")) {
+        loadDataTable("pending", dataColumns);
+    }
+    else {
+        loadDataTable("all", dataColumns);
+    }
 
-    function loadDataTable(status) {
+
+    function loadDataTable(status, dataColumns) {
         dataTable = $('#orderIndex').DataTable({
             ajax: {
                 url: dataUrl + "?status=" + status
