@@ -1,6 +1,7 @@
 ﻿using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using BulkyBook.Models.ViewModels;
+using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -57,8 +58,9 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             else
             {
                 trolley.ApplicationUserId = claim.Value;
-
                 _unitOfWork.Trolley.Add(trolley);
+                HttpContext.Session.SetInt32(SD.SessionTrolley, _unitOfWork.Trolley.GetAll(a => a.ApplicationUserId == claim.Value).ToList().Count());
+
             }
             return RedirectToAction("Index");
         }

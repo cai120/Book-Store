@@ -2,6 +2,7 @@
 using BulkyBook.Models;
 using BulkyBook.Models.Enum;
 using BulkyBook.Models.ViewModels;
+using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -171,6 +172,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
 		public IActionResult OrderConfirmed(int id)
 		{
+			HttpContext.Session.Clear();
 			var orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(x => x.Id == id);
 			if (orderHeader.PaymentStatus != PaymentStatus.ApprovedForDelayedPayment)
 			{
@@ -201,14 +203,18 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 				_unitOfWork.Trolley.Remove(trolley);
 			else
 				_unitOfWork.Trolley.IncrementCount(trolley, -1);
-			return RedirectToAction("Index");
+
+            HttpContext.Session.SetInt32(SD.SessionTrolley, _unitOfWork.Trolley.GetAll(a => a.ApplicationUserId == trolley.ApplicationUserId).ToList().Count());
+
+            return RedirectToAction("Index");
 		}
 
 		public IActionResult Remove(int id)
 		{
 			var trolley = _unitOfWork.Trolley.GetFirstOrDefault(a => a.Id == id);
 			_unitOfWork.Trolley.Remove(trolley);
-			return RedirectToAction("Index");
+            HttpContext.Session.SetInt32(SD.SessionTrolley, _unitOfWork.Trolley.GetAll(a => a.ApplicationUserId == trolley.ApplicationUserId).ToList().Count());
+            return RedirectToAction("Index");
 		}
 
 		private double GetPriceBasedOnQuantity(int quantity, double price, double price50, double price100)
